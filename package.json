@@ -1,0 +1,54 @@
+{
+  "name": "iot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "author": "Ricky Leal",
+  "license": "",
+  "engine": {
+    "node": "18.18.0",
+    "npm": "9.8.1"
+  },
+  "engineStrict": true,
+  "scripts": {
+    "docker:up": "bnr docker:up",
+    "docker:down": "bnr docker:down",
+    "docker:timescaledb:up": "bnr docker:timescaledb:up",
+    "docker:timescaledb:down": "bnr docker:timescaledb:down",
+    "docker:grafana:up": "bnr docker:grafana:up",
+    "docker:grafana:down": "bnr docker:grafana:down",
+    "docker:pgadmin:up": "bnr docker:pgadmin:up",
+    "docker:pgadmin:down": "bnr docker:pgadmin:down"
+  },
+  "betterScripts": {
+    "docker:up": {
+      "command": "docker compose -f docker-compose.yaml --profile iot up -d"
+    },
+    "docker:down": {
+      "command": "docker compose -f docker-compose.yaml --profile iot down --rmi local -v"
+    },
+    "docker:timescaledb:up": {
+      "command": "docker compose -f docker-compose.yaml --profile timescaledb up -d"
+    },
+    "docker:timescaledb:down": {
+      "command": "docker compose -f docker-compose.yaml --profile timescaledb down --rmi local -v"
+    },
+    "docker:grafana:up": {
+      "command": "docker compose -f docker-compose.yaml --profile grafana up -d"
+    },
+    "docker:grafana:down": {
+      "command": "docker compose -f docker-compose.yaml --profile grafana down --rmi local -v"
+    },
+    "docker:pgadmin:up": {
+      "command": "docker compose -f docker-compose.yaml --profile pgadmin4 up -d"
+    },
+    "docker:pgadmin:down": {
+      "command": "docker compose -f docker-compose.yaml --profile pgadmin4 down --rmi local -v"
+    }
+  },
+  "devDependencies": {
+    "better-npm-run": "^0.1.1"
+  }
+}

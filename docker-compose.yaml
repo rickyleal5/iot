@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  grafana:
+    container_name: grafana
+    profiles: 
+      - iot
+      - grafana
+    build:
+      context: ./grafana
+      args:
+        - CONFIG_FILE=${CONFIG_FILE}
+        - GF_PATHS_CONFIG=${GF_PATHS_CONFIG}
+        - GF_PATHS_PROVISIONING=${GF_PATHS_PROVISIONING}
+        - DATASOURCES_FOLDER=${DATASOURCES_FOLDER}
+        - DASHBOARDS_FOLDER=${DASHBOARDS_FOLDER}
+        - DASHBOARDS_PROVIDER=${DASHBOARDS_PROVIDER}
+    ports:
+      - 3000:${GRAFANA_PORT}
+    env_file: .env
+    networks:
+      - iot
+
+  timescaledb:
+    container_name: timescaledb
+    profiles: 
+      - iot
+      - timescaledb
+    build:
+      context: ./timescaledb
+      shm_size: '512mb'
+      args:
+        - DB_PORT=${DB_PORT}
+    shm_size: '512mb'
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    env_file: .env
+    networks:
+      - iot
+
+  pgadmin:
+      container_name: pgadmin4
+      profiles: 
+        - pgadmin4
+      image: dpage/pgadmin4:7.7
+      ports:
+          - ${PGADMIN_PORT}:${PGADMIN_PORT}
+      env_file: .env
+      volumes:
+          - ./pgadmin4/servers.json:/pgadmin4/servers.json
+      networks:
+        - iot
+
+networks:
+  iot:
+    name: iot
+    driver: bridge

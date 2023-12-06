@@ -1,0 +1,12 @@
+migrations
+models
+coverage
+config
+node_modules
+.c8rc.json
+.eslintrc.cjs
+package.json
+package-lock.json
+README.md
+.serverless
+serverless.yaml

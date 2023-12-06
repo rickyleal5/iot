@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template: ECS Fargate for Grafana project'
+
+Parameters:
+  ECSTaskExecutionRoleName:
+    Type: String
+    Default: 'iot-ECSTaskExecutionRole'
+  ECSTaskExecutionRoleDescription:
+    Type: String 
+    Default: 'ECSTaskExecutionRole for iot project'
+  GrafanaContainerPort:
+    Type: Number
+    Default: 3000
+  GrafanaImage:
+    Type: String 
+    Default: '<AWS ACCOUNT>.dkr.ecr.<AWS REGION>.amazonaws.com/grafana:latest'
+  GrafanaContainerName:
+    Type: String 
+    Default: 'grafana'
+  GrafanaEnvFileS3Arn:
+    Type: String
+    Default: 'arn:aws:s3:::cloudformation-templates-for-this-project/.env'
+
+Resources:
+  ECSTaskExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Ref ECSTaskExecutionRoleName
+      Description: !Ref ECSTaskExecutionRoleDescription
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - ecs-tasks.amazonaws.com
+            Action: 
+              - 'sts:AssumeRole'
+      Path: '/'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+        - 'arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  TaskDefinition:
+    Type: 'AWS::ECS::TaskDefinition'
+    Properties:
+      Family: 'grafana-iot-task'
+      Cpu: '256'
+      Memory: '512'
+      RunTimePlatform:
+        CpuArchitecture: X86_64
+        OperatingSystemFamily: LINUX
+      NetworkMode: 'awsvpc'
+      RequiresCompatibilities:
+        - 'FARGATE'
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      Tags:
+        - Key: iot
+          Value: iot
+      ContainerDefinitions:
+        - Name: !Ref GrafanaContainerName
+          Image: !Ref GrafanaImage
+          Essential: 'true'
+          Cpu: 256
+          Memory: 512
+          MemoryReservation: 512
+          EnvironmentFiles:
+            - Type: s3
+              Value: !Ref GrafanaEnvFileS3Arn
+          PortMappings:
+            - Name: 'grafana-port-mapping'
+              ContainerPort: !Ref GrafanaContainerPort
+              HostPort: !Ref GrafanaContainerPort
+              Protocol: 'tcp'
+              AppProtocol: 'http'
+
+  FargateService:
+    Type: 'AWS::ECS::Service'
+    DependsOn: TaskDefinition
+    Properties:
+      ServiceName: 'grafana-iot-service'
+      Cluster: !Ref EcsCluster
+      LaunchType: 'FARGATE'
+      SchedulingStrategy: REPLICA
+      PlatformVersion: LATEST
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+            - Fn::ImportValue: grafanaSubnet1VPC
+            - Fn::ImportValue: grafanaSubnet2VPC
+          SecurityGroups:
+            - Fn::ImportValue: grafanaSecurityGroupName
+          AssignPublicIp: ENABLED
+      DesiredCount: 1
+      ServiceConnectConfiguration:
+        Enabled: false
+      DeploymentController:
+        Type: ECS
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker:
+          Enable: 'true'
+          Rollback: 'true'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  EcsCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: 'grafana-iot'
+      CapacityProviders: 
+        - FARGATE
+        - FARGATE_SPOT
+      ClusterSettings:
+        - Name: 'containerInsights'
+          Value: 'disabled'
+      ServiceConnectDefaults:
+        Namespace: 'grafana'
+      Tags:
+        - Key: iot
+          Value: iot

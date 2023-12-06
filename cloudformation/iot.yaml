@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template: IoT devices for Grafana project'
+
+Parameters:
+  ThingName:
+    Type: String
+    Default: RaspberryPi
+
+Resources:
+  Thing:
+    Type: 'AWS::IoT::Thing'
+    Properties:
+      ThingName: !Ref ThingName
+
+  IoTPolicy:
+    Type: 'AWS::IoT::Policy'
+    Properties:
+      PolicyName: IoTPolicy
+      PolicyDocument: 
+        Version: '2012-10-17' 
+        Statement: 
+          - Effect: Allow 
+            Action: 
+              - iot:*
+            Resource:
+              - !GetAtt Thing.Arn

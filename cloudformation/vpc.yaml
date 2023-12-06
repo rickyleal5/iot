@@ -1,0 +1,184 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template: VPC for Grafana project'
+
+Parameters:
+  GrafanaSecurityGroupName:
+    Type: String
+    Default: 'GrafanaSecurityGroup'
+  GrafanaSecurityGroupDescription:
+    Type: String 
+    Default: 'Security Group for the Grafana project'
+  GrafanaContainerPort:
+    Type: Number
+    Default: 3000
+  TimescaledbSecurityGroupName:
+    Type: String
+    Default: 'TimescaledbSecurityGroup'
+  TimescaledbSecurityGroupDescription:
+    Type: String 
+    Default: 'Security Group for Timescaledb Cloud'
+  TimescaledbPort:
+    Type: Number
+    Default: 5432
+
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: '10.0.0.0/26'
+      EnableDnsSupport: 'true'
+      EnableDnsHostnames: 'true'
+      InstanceTenancy: 'default'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: iot
+          Value: iot
+
+  AttachInternetGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  Subnet1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.0.0/28'
+      AvailabilityZone: <AWS REGION>a
+      MapPublicIpOnLaunch: 'true'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  Subnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: '10.0.0.16/28'
+      AvailabilityZone: <AWS REGION>b
+      MapPublicIpOnLaunch: 'true'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.32/28
+      MapPublicIpOnLaunch: 'false'
+      AvailabilityZone: <AWS REGION>a
+      Tags:
+        - Key: iot
+          Value: iot
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.48/28
+      AvailabilityZone: <AWS REGION>b
+      MapPublicIpOnLaunch: 'false'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: iot
+          Value: iot
+
+  PrivateSubnetRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnetRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  GrafanaSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: !Ref GrafanaSecurityGroupDescription
+      GroupName: !Ref GrafanaSecurityGroupName
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref GrafanaContainerPort
+          ToPort: !Ref GrafanaContainerPort
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: iot
+          Value: iot
+
+  TimescaledbSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: !Ref TimescaledbSecurityGroupDescription
+      GroupName: !Ref TimescaledbSecurityGroupName
+      VpcId: !Ref VPC
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: !Ref TimescaledbPort
+          ToPort: !Ref TimescaledbPort
+          CidrIp: '192.168.0.0/24'
+          Description: 'Outbound rule to TimescaleDB Cloud'
+      Tags:
+        - Key: iot
+          Value: iot
+
+
+Outputs:
+  grafanaSecurityGroup:
+    Description: Security Group Grafana
+    Value: !GetAtt GrafanaSecurityGroup.GroupId
+    Export: 
+      Name: grafanaSecurityGroupName
+  subnet1VPCGrafana:
+    Description: Subnet1 VPC Grafana
+    Value: !GetAtt Subnet1.SubnetId
+    Export: 
+      Name: grafanaSubnet1VPC
+  subnet2VPCGrafana:
+    Description: Subnet2 VPC Grafana
+    Value: !GetAtt Subnet2.SubnetId
+    Export: 
+      Name: grafanaSubnet2VPC

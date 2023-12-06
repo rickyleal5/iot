@@ -1,0 +1,109 @@
+{
+  "name": "aws-lambda-iot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "private": true,
+  "author": "Ricky Leal",
+  "license": "",
+  "engine": {
+    "node": "18.18.0",
+    "npm": "9.8.1"
+  },
+  "engineStrict": true,
+  "scripts": {
+    "deploy": "bnr deploy",
+    "remove": "bnr remove",
+    "setUpDb": "bnr setUpDb",
+    "test": "bnr test",
+    "grant": "bnr grant",
+    "loop": "bnr loop",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "prettier": "prettier . --check",
+    "prettier:fix": "prettier . --write"
+  },
+  "betterScripts": {
+    "deploy": {
+      "command": "sls deploy",
+      "env": {
+        "DEBUG": "iot,database"
+      }
+    },
+    "remove": {
+      "command": "sls remove",
+      "env": {
+        "DEBUG": "iot,database"
+      }
+    },
+    "setUpDb": {
+      "command": "node ./tools/setUpDb.js",
+      "env": {
+        "DEBUG": "iot,database",
+        "DATABASE": "tsdb",
+        "DIALECT": "postgres",
+        "HOST": "localhost",
+        "POSTGRES_PASSWORD": "password",
+        "SEQUELIZE_USER": "sequelize",
+        "DB_PORT": 5432,
+        "GRAFANA_USER": "grafana"
+      }
+    },
+    "test": {
+      "command": "c8 mocha --recursive --timeout 5000",
+      "env": {
+        "DEBUG": "test",
+        "DATABASE": "tsdb",
+        "DIALECT": "postgres",
+        "HOST": "localhost",
+        "POSTGRES_PASSWORD": "password",
+        "SEQUELIZE_USER": "sequelize",
+        "DB_PORT": 5432,
+        "GRAFANA_USER": "grafana"
+      }
+    },
+    "grant": {
+      "command": "node ./test/grantPrivileges.js",
+      "env": {
+        "DEBUG": "iot,database",
+        "DATABASE": "tsdb",
+        "DIALECT": "postgres",
+        "HOST": "localhost",
+        "POSTGRES_PASSWORD": "password",
+        "SEQUELIZE_USER": "sequelize",
+        "DB_PORT": 5432,
+        "GRAFANA_USER": "grafana"
+      }
+    },
+    "loop": {
+      "command": "node ./tools/telemetryLoop.js",
+      "env": {
+        "DEBUG": "iot,database",
+        "DATABASE": "tsdb",
+        "DIALECT": "postgres",
+        "HOST": "localhost",
+        "POSTGRES_PASSWORD": "password",
+        "SEQUELIZE_USER": "sequelize",
+        "DB_PORT": 5432
+      }
+    }
+  },
+  "dependencies": {
+    "better-npm-run": "^0.1.1",
+    "debug": "^4.3.4",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.35.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.2.0",
+    "serverless-ignore": "^0.2.1",
+    "c8": "^8.0.1",
+    "chai": "^4.3.10",
+    "eslint": "^8.55.0",
+    "mocha": "^10.2.0",
+    "prettier": "^3.1.0"
+  }
+}

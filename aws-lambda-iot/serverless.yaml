@@ -1,0 +1,44 @@
+org: <ORG>
+app: <APP>
+service: aws-lambda-iot
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: serverless
+  stage: dev
+  region: <AWS REGION>
+  tags:
+    iot: iot
+  memorySize: 512
+  timeout: 15
+  environment:
+    DEBUG: iot,database
+    DATABASE: ${param:DATABASE}
+    DIALECT: ${param:DIALECT}
+    HOST: ${param:HOST}
+    POSTGRES_USER: ${param:POSTGRES_USER}
+    POSTGRES_PASSWORD: ${param:POSTGRES_PASSWORD}
+    SEQUELIZE_USER: ${param:SEQUELIZE_USER}
+    DB_PORT: ${param:DB_PORT}
+  vpc:
+    securityGroupIds:
+      - ${param:SECURITY_GROUP}
+    subnetIds:
+      - ${param:SUBNET1}
+      - ${param:SUBNET2}
+
+functions:
+  telemetry:
+    handler: functions/handler.telemetry
+    events:
+      - iot:
+          name: "telemetryEvent"
+          description: "IoT telemetry created. Event trigger for Lambda"
+          enabled: true
+          sql: "SELECT * FROM 'telemetry/data'"
+          sqlVersion: '2016-03-23'
+
+plugins:
+  - serverless-ignore

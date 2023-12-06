@@ -1,0 +1,11 @@
+node_modules
+aws-lambda-iot/node_modules
+aws-lambda-iot/.serverless
+aws-lambda-iot/node_modules
+aws-lambda-iot/coverage
+raspberrypi/aws/__pycache__/
+raspberrypi/telemetry/__pycache__/
+raspberrypi/certs/*.pem
+raspberrypi/certs/*.pem.key
+raspberrypi/certs/*.pem.crt
+iot.code-workspace

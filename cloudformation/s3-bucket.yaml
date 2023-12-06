@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template: Buckets to store files for this project'
+
+Parameters:
+  ThisBucketName:
+    Type: String
+    Default: 'cloudformation-templates-for-this-project'
+
+Resources:
+  CloudformationS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref ThisBucketName
+      Tags:
+        - Key: iot
+          Value: iot

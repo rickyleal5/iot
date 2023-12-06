@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template: VPC for Grafana project'
+
+Parameters:
+  GrafanaRepositoryName:
+    Type: String
+    Default: 'grafana'  
+
+Resources:
+  ECRGrafana:
+    Type: 'AWS::ECR::Repository'
+    Properties:
+      RepositoryName: !Ref GrafanaRepositoryName
+      RepositoryPolicyText:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal:
+              AWS:
+                - 'arn:aws:iam::<AWS ACCOUNT>:user/<USER>'
+            Action: 
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+      Tags:
+        - Key: iot
+          Value: iot

@@ -1,0 +1,3 @@
+awsiotsdk
+python-dotenv
+pythonping

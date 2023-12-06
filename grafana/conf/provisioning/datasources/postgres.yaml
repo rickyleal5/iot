@@ -1,0 +1,22 @@
+apiVersion: 1
+
+
+datasources:
+  - name: TimescaledbCloud
+    type: postgres
+    uid: tsdb
+    url: ${HOST}:${DB_PORT}
+    user: grafana
+    database: ${DATABASE}
+    isDefault: true
+    editable: true
+    jsonData:
+      database: ${DATABASE}
+      sslmode: ${SSL_MODE}
+      maxOpenConns: 100
+      maxIdleConns: 100
+      maxIdleConnsAuto: true
+      connMaxLifetime: 14400
+      postgresVersion: 1500
+      timescaledb: true
+
