@@ -654,7 +654,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT\n  time,\n  ping AS \"Ping (cm)\"\nFROM\n  telemetry\nWHERE\n  $__timeFilter(time)\n  AND \"raspberryPiId\" = '$raspberryPi'\nORDER BY\n  time;",
+          "rawSql": "SELECT\n  time,\n  ping AS \"Ping\"\nFROM\n  telemetry\nWHERE\n  $__timeFilter(time)\n  AND \"raspberryPiId\" = '$raspberryPi'\nORDER BY\n  time;",
           "refId": "A",
           "sql": {
             "columns": [
