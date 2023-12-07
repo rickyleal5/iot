@@ -50,6 +50,7 @@ npm run docker:up
 cd aws-lambda-iot
 npm i
 npm run setUpDb
+npm run grant
 npm run loop
 ```
 

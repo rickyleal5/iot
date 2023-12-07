@@ -36,8 +36,8 @@ jobs:
               with:
                   node-version: '18.x'
             - name: Install dependencies
-              run: pwd && cd aws-lambda-iot && pwd && npm ci
+              run: cd aws-lambda-iot && npm ci
             - name: Set up test
-              run: pwd && cd aws-lambda-iot && pwd && npm run setUpTest
+              run: cd aws-lambda-iot && npm run setUpTest
             - name: Run test
-              run: pwd && cd aws-lambda-iot && pwd && npm run test
+              run: cd aws-lambda-iot && npm run test
