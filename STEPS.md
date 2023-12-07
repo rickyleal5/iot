@@ -1,4 +1,4 @@
-# Guide to reproduce project
+# Guide to reproduce the project
 
 * You need AWS + Serverless credentials, and their CLIs + docker + node + git + postgres installed.
 * You need to add the parameters, the TimescaleDB VPC info in the CloudFormation files.
@@ -6,7 +6,7 @@
 * You have to update the serverless.yaml file and add the subnets and security group ID for TimescaleDB.
 * You need a Raspberry Pi connected to an ultrasonic distance sensor (HC-SR04).
 * You need to create a database service on TimescaleDB Cloud and create a VPC there.
-*
+
 
 ## Steps
 Install:
@@ -139,7 +139,7 @@ docker rmi <IMAGE ID> -f
 ```
 
 **Optional**
-Clear your ~/.bash_history if you typed in passwords in it
+Clear your ~/.bash_history if you typed sensitive data
 ```console
 bash ./tools/erase-bash-history.sh
 ```
