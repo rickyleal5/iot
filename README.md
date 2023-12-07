@@ -8,7 +8,7 @@ This project creates a data pipeline combining [AWS IoT Core](https://aws.amazon
 
  The Raspberry Pi runs a Python program that measures distance and the ping time to the AWS IoT endpoint. Distance is measured with an ultrasonic distance sensor ([HC-SR04](https://www.sparkfun.com/products/15569)).
  
- The database structure is created using [Sequelize](https://sequelize.org/) models that represent the tables in the database. Unit testing is done using [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/).
+ The database structure is created using [Sequelize](https://sequelize.org/) models that represent the tables in the database. Unit testing is done using [Mocha](https://mochajs.org/) and [Chai](https://www.chaijs.com/) and can be run locally or on a CI/CD workflow using [GitHub Actions](https://github.com/features/actions).
 
 #### Cloud infrastructure
 

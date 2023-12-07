@@ -22,7 +22,8 @@
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "prettier": "prettier . --check",
-    "prettier:fix": "prettier . --write"
+    "prettier:fix": "prettier . --write",
+    "setUpTest": "bnr setUpTest"
   },
   "betterScripts": {
     "deploy": {
@@ -64,7 +65,7 @@
       }
     },
     "grant": {
-      "command": "node ./test/grantPrivileges.js",
+      "command": "node ./tools/grantPrivileges.js",
       "env": {
         "DEBUG": "iot,database",
         "DATABASE": "tsdb",
@@ -86,6 +87,15 @@
         "POSTGRES_PASSWORD": "password",
         "SEQUELIZE_USER": "sequelize",
         "DB_PORT": 5432
+      }
+    },
+    "setUpTest": {
+      "command": "node ./tools/setUpActionsTest.js",
+      "env": {
+        "DEBUG": "test",
+        "DATABASE": "postgres",
+        "SEQUELIZE_USER": "postgres",
+        "DIALECT": "postgres"
       }
     }
   },
